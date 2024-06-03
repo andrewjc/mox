@@ -1,3 +1,8 @@
+## Mox for Windows ##
+This is a fork of the original Mox project, with the goal of making it work on Windows.
+
+---
+
 Mox is a modern full-featured open source secure mail server for low-maintenance self-hosted email.
 
 For more details, see the mox website, https://www.xmox.nl.
