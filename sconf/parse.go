@@ -74,19 +74,26 @@ func (p *parser) consume() string {
 }
 
 func (p *parser) detectIndentStyle() {
-	line, _, err := p.input.ReadLine()
-	if err != nil {
-		p.stop(err.Error())
+	for {
+		line, _, err := p.input.ReadLine()
+		if err != nil {
+			p.stop(err.Error())
+		}
+		prefix := string(line)
+		if strings.TrimSpace(prefix) != "" {
+			if strings.HasPrefix(prefix, "    ") {
+				p.useSpaces = true
+				p.prefix = "    "
+			} else if strings.HasPrefix(prefix, "\t") {
+				p.useSpaces = false
+				p.prefix = "\t"
+			} else {
+				p.prefix = ""
+			}
+			p.input = bufio.NewReader(io.MultiReader(strings.NewReader(prefix+"\n"), p.input))
+			break
+		}
 	}
-	prefix := string(line)
-	if strings.HasPrefix(prefix, "    ") {
-		p.useSpaces = true
-		p.prefix = "    "
-	} else {
-		p.useSpaces = false
-		p.prefix = "\t"
-	}
-	p.input = bufio.NewReader(io.MultiReader(strings.NewReader(prefix+"\n"), p.input))
 }
 
 // Next returns whether the next line is properly indented, reading data as necessary.
