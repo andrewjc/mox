@@ -23,8 +23,6 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/mjl-/sconf"
-
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/dkim"
 	"github.com/mjl-/mox/dns"
@@ -33,6 +31,7 @@ import (
 	"github.com/mjl-/mox/mox-"
 	"github.com/mjl-/mox/moxvar"
 	"github.com/mjl-/mox/queue"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtpserver"
 	"github.com/mjl-/mox/store"
 )

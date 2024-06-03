@@ -35,8 +35,6 @@ import (
 
 	"github.com/mjl-/autocert"
 
-	"github.com/mjl-/sconf"
-
 	"github.com/mjl-/mox/autotls"
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/dkim"
@@ -45,6 +43,7 @@ import (
 	"github.com/mjl-/mox/mlog"
 	"github.com/mjl-/mox/moxio"
 	"github.com/mjl-/mox/mtasts"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtp"
 )
 

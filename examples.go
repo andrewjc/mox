@@ -10,10 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mjl-/sconf"
-
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/mox-"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtp"
 	"github.com/mjl-/mox/webhook"
 )

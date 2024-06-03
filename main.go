@@ -42,7 +42,6 @@ import (
 
 	"github.com/mjl-/autocert"
 	"github.com/mjl-/bstore"
-	"github.com/mjl-/sconf"
 	"github.com/mjl-/sherpa"
 
 	"github.com/mjl-/mox/config"
@@ -61,6 +60,7 @@ import (
 	"github.com/mjl-/mox/mtasts"
 	"github.com/mjl-/mox/publicsuffix"
 	"github.com/mjl-/mox/queue"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtp"
 	"github.com/mjl-/mox/smtpclient"
 	"github.com/mjl-/mox/spf"

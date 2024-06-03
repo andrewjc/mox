@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/mjl-/bstore"
-	"github.com/mjl-/sconf"
+	"github.com/mjl-/mox/sconf"
 
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/message"

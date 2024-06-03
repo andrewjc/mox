@@ -26,13 +26,12 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/mjl-/sconf"
-
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/dns"
 	"github.com/mjl-/mox/dnsbl"
 	"github.com/mjl-/mox/mlog"
 	"github.com/mjl-/mox/mox-"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtp"
 	"github.com/mjl-/mox/store"
 )

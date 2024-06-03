@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/mjl-/bstore"
-	"github.com/mjl-/sconf"
 
 	"github.com/mjl-/mox/config"
 	"github.com/mjl-/mox/dmarcdb"
@@ -22,6 +21,7 @@ import (
 	"github.com/mjl-/mox/mtasts"
 	"github.com/mjl-/mox/mtastsdb"
 	"github.com/mjl-/mox/queue"
+	"github.com/mjl-/mox/sconf"
 	"github.com/mjl-/mox/smtp"
 	"github.com/mjl-/mox/store"
 	"github.com/mjl-/mox/tlsrpt"
