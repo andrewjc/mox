@@ -3,27 +3,29 @@ default: build
 build: build0 frontend build1
 
 build0:
-	# build early to catch syntax errors
-	CGO_ENABLED=0 go build
-	CGO_ENABLED=0 go vet ./...
-	./gendoc.sh
-	# we rewrite some dmarcprt and tlsrpt enums into untyped strings: real-world
-	# reports have invalid values, and our loose Go typed strings accept all values,
-	# but we don't want the typescript runtime checker to fail on those unrecognized
-	# values.
-	(cd webadmin && CGO_ENABLED=0 go run ../vendor/github.com/mjl-/sherpadoc/cmd/sherpadoc/*.go -adjust-function-names none -rename 'config Domain ConfigDomain,dmarc Policy DMARCPolicy,mtasts MX STSMX,tlsrptdb Record TLSReportRecord,tlsrptdb SuppressAddress TLSRPTSuppressAddress,dmarcrpt DKIMResult string,dmarcrpt SPFResult string,dmarcrpt SPFDomainScope string,dmarcrpt DMARCResult string,dmarcrpt PolicyOverride string,dmarcrpt Alignment string,dmarcrpt Disposition string,tlsrpt PolicyType string,tlsrpt ResultType string' Admin) >webadmin/api.json
-	(cd webaccount && CGO_ENABLED=0 go run ../vendor/github.com/mjl-/sherpadoc/cmd/sherpadoc/*.go -adjust-function-names none Account) >webaccount/api.json
-	(cd webmail && CGO_ENABLED=0 go run ../vendor/github.com/mjl-/sherpadoc/cmd/sherpadoc/*.go -adjust-function-names none Webmail) >webmail/api.json
+	set CGO_ENABLED=0
+	go build
+	go vet ./...
+
+	@echo "Generating documentation"
+	powershell -ExecutionPolicy Bypass -File .\gendoc.ps1
+
+	@echo "Patching..."
+	cd webadmin && ..\build-tools\sherpadoc.exe -adjust-function-names none -rename "config Domain ConfigDomain,dmarc Policy DMARCPolicy,mtasts MX STSMX,tlsrptdb Record TLSReportRecord,tlsrptdb SuppressAddress TLSRPTSuppressAddress,dmarcrpt DKIMResult string,dmarcrpt SPFResult string,dmarcrpt SPFDomainScope string,dmarcrpt DMARCResult string,dmarcrpt PolicyOverride string,dmarcrpt Alignment string,dmarcrpt Disposition string,tlsrpt PolicyType string,tlsrpt ResultType string" Admin > ../webadmin/api.json && cd ..
+	cd webaccount && ..\build-tools\sherpadoc.exe -adjust-function-names none Account > ../webaccount/api.json && cd ..
+	cd webmail && ..\build-tools\sherpadoc.exe -adjust-function-names none Webmail > ../webmail/api.json && cd ..
+
 	./gents.sh webadmin/api.json webadmin/api.ts
 	./gents.sh webaccount/api.json webaccount/api.ts
 	./gents.sh webmail/api.json webmail/api.ts
 
 build1:
-	# build again, api json files above are embedded and new frontend code generated
-	CGO_ENABLED=0 go build
+	set CGO_ENABLED=0
+	go build
 
 install: build0 frontend
-	CGO_ENABLED=0 go install
+	set CGO_ENABLED=0
+	go install
 
 race: build0
 	go build -race
@@ -36,12 +38,9 @@ test-race:
 	CGO_ENABLED=1 go test -race -shuffle=on -covermode atomic -coverprofile cover.out ./...
 	go tool cover -html=cover.out -o cover.html
 
-# note: if testdata/upgradetest.mbox.gz exists, its messages will be imported
-# during tests. helpful for performance/resource consumption tests.
 test-upgrade: build
 	nice ./test-upgrade.sh
 
-# needed for "check" target
 install-staticcheck:
 	go install honnef.co/go/tools/cmd/staticcheck@v0.4.7
 
@@ -59,11 +58,9 @@ check:
 	staticcheck -tags errata rfc/errata.go
 	staticcheck -tags xr rfc/xr.go
 
-# needed for check-shadow
 install-shadow:
 	go install golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow@v0.19.0
 
-# having "err" shadowed is common, best to not have others
 check-shadow:
 	go vet -vettool=$$(which shadow) ./... 2>&1 | grep -v '"err"'
 	go vet -tags integration -vettool=$$(which shadow) 2>&1 | grep -v '"err"'
@@ -170,4 +167,3 @@ buildall:
 	GOOS=solaris GOARCH=amd64 go build
 	GOOS=aix GOARCH=ppc64 go build
 	GOOS=windows GOARCH=amd64 go build
-	# no plan9 for now
