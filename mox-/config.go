@@ -26,7 +26,6 @@ import (
 	"regexp"
 	"slices"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -537,25 +536,12 @@ func PrepareStaticConfig(ctx context.Context, log mlog.Log, configFile string, c
 	}
 	u, err := user.Lookup(c.User)
 	if err != nil {
-		uid, err := strconv.ParseUint(c.User, 10, 32)
-		if err != nil {
-			addErrorf("parsing unknown user %s as uid: %v (hint: add user mox with \"useradd -d $PWD mox\" or specify a different username on the quickstart command-line)", c.User, err)
-		} else {
-			// We assume the same gid as uid.
-			c.UID = uint32(uid)
-			c.GID = uint32(uid)
-		}
+		uid := c.User
+		c.UID = uid
+		c.GID = uid
 	} else {
-		if uid, err := strconv.ParseUint(u.Uid, 10, 32); err != nil {
-			addErrorf("parsing uid %s: %v", u.Uid, err)
-		} else {
-			c.UID = uint32(uid)
-		}
-		if gid, err := strconv.ParseUint(u.Gid, 10, 32); err != nil {
-			addErrorf("parsing gid %s: %v", u.Gid, err)
-		} else {
-			c.GID = uint32(gid)
-		}
+		c.UID = u.Uid
+		c.GID = u.Gid
 	}
 
 	hostname, err := dns.ParseDomain(c.Hostname)

@@ -84,8 +84,8 @@ type Static struct {
 	SpecifiedSMTPListenIPs []net.IP `sconf:"-" json:"-"`
 
 	// To switch to after initialization as root.
-	UID uint32 `sconf:"-" json:"-"`
-	GID uint32 `sconf:"-" json:"-"`
+	UID string `sconf:"-" json:"-"`
+	GID string `sconf:"-" json:"-"`
 }
 
 // InitialMailboxes are mailboxes created for a new account.
