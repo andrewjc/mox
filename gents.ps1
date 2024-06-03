@@ -7,8 +7,12 @@ param (
 # Exit on error
 $ErrorActionPreference = "Stop"
 
-# Generate new TypeScript client
-go run vendor/github.com/mjl-/sherpats/cmd/sherpats/main.go -bytes-to-string -slices-nullable -maps-nullable -nullable-optional -namespace api api < $inputFile > "$outputFile.tmp"
+# Read the content of the input file
+$inputContent = Get-Content -Raw $inputFile
+
+# Generate new TypeScript client and write to temporary file
+# Use PowerShell's redirection to pass the content to the Go command
+$inputContent | & go run vendor/github.com/mjl-/sherpats/cmd/sherpats/main.go -bytes-to-string -slices-nullable -maps-nullable -nullable-optional -namespace api api > "$outputFile.tmp"
 
 # Compare the new output with the existing one and update if different
 if (Compare-Object (Get-Content $outputFile) (Get-Content "$outputFile.tmp") -SyncWindow 0) {

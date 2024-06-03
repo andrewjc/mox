@@ -8,16 +8,16 @@ build0:
 	go vet ./...
 
 	@echo "Generating documentation"
-	powershell -ExecutionPolicy Bypass -File .\gendoc.ps1
+	REM powershell -ExecutionPolicy Bypass -File .\gendoc.ps1
 
 	@echo "Patching..."
-	cd webadmin && ..\build-tools\sherpadoc.exe -adjust-function-names none -rename "config Domain ConfigDomain,dmarc Policy DMARCPolicy,mtasts MX STSMX,tlsrptdb Record TLSReportRecord,tlsrptdb SuppressAddress TLSRPTSuppressAddress,dmarcrpt DKIMResult string,dmarcrpt SPFResult string,dmarcrpt SPFDomainScope string,dmarcrpt DMARCResult string,dmarcrpt PolicyOverride string,dmarcrpt Alignment string,dmarcrpt Disposition string,tlsrpt PolicyType string,tlsrpt ResultType string" Admin > ../webadmin/api.json && cd ..
-	cd webaccount && ..\build-tools\sherpadoc.exe -adjust-function-names none Account > ../webaccount/api.json && cd ..
-	cd webmail && ..\build-tools\sherpadoc.exe -adjust-function-names none Webmail > ../webmail/api.json && cd ..
+	REM cd webadmin && ..\build-tools\sherpadoc.exe -adjust-function-names none -rename "config Domain ConfigDomain,dmarc Policy DMARCPolicy,mtasts MX STSMX,tlsrptdb Record TLSReportRecord,tlsrptdb SuppressAddress TLSRPTSuppressAddress,dmarcrpt DKIMResult string,dmarcrpt SPFResult string,dmarcrpt SPFDomainScope string,dmarcrpt DMARCResult string,dmarcrpt PolicyOverride string,dmarcrpt Alignment string,dmarcrpt Disposition string,tlsrpt PolicyType string,tlsrpt ResultType string" Admin > ../webadmin/api.json && cd ..
+	REM cd webaccount && ..\build-tools\sherpadoc.exe -adjust-function-names none Account > ../webaccount/api.json && cd ..
+	REM cd webmail && ..\build-tools\sherpadoc.exe -adjust-function-names none Webmail > ../webmail/api.json && cd ..
 
-	./gents.sh webadmin/api.json webadmin/api.ts
-	./gents.sh webaccount/api.json webaccount/api.ts
-	./gents.sh webmail/api.json webmail/api.ts
+	powershell -ExecutionPolicy Bypass -File ./gents.ps1 webadmin/api.json webadmin/api.ts
+	powershell -ExecutionPolicy Bypass -File ./gents.ps1 webaccount/api.json webaccount/api.ts
+	powershell -ExecutionPolicy Bypass -File ./gents.ps1 webmail/api.json webmail/api.ts
 
 build1:
 	set CGO_ENABLED=0
