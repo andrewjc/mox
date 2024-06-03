@@ -28,14 +28,14 @@ var passedFiles = map[string][]*os.File{}   // Path to file descriptors.
 func RestorePassedFiles() {
 	s := os.Getenv("MOX_SOCKETS")
 	if s == "" {
-		var linuxhint string
+		var osHint string
 		if runtime.GOOS == "linux" {
-			linuxhint = " If you updated from v0.0.1, update the mox.service file to start as root (privileges are dropped): ./mox config printservice >mox.service && sudo systemctl daemon-reload && sudo systemctl restart mox."
+			osHint = " If you updated from v0.0.1, update the mox.service file to start as root (privileges are dropped): ./mox config printservice >mox.service && sudo systemctl daemon-reload && sudo systemctl restart mox."
 		}
-		pkglog.Fatal("mox must be started as root, and will drop privileges after binding required sockets (missing environment variable MOX_SOCKETS)." + linuxhint)
+		pkglog.Fatal("mox must be started as root, and will drop privileges after binding required sockets (missing environment variable MOX_SOCKETS)." + osHint)
 	}
 
-	// 0,1,2 are stdin,stdout,stderr, 3 is the first passed fd (first listeners, then files).
+	// 0,1,2 are stdin, stdout, stderr, 3 is the first passed fd (first listeners, then files).
 	var o uintptr = 3
 	for _, addr := range strings.Split(s, ",") {
 		passedListeners[addr] = os.NewFile(o, addr)
@@ -78,7 +78,7 @@ var FilesImmediate bool
 // otherwise (not root) returns a network listener from a file descriptor that was
 // passed by the parent root process.
 func Listen(network, addr string) (net.Listener, error) {
-	if os.Getuid() != 0 && !FilesImmediate {
+	if passedListeners[addr] != nil && !FilesImmediate {
 		f, ok := passedListeners[addr]
 		if !ok {
 			return nil, fmt.Errorf("no file descriptor for listener %s", addr)
@@ -98,9 +98,8 @@ func Listen(network, addr string) (net.Listener, error) {
 	if err != nil {
 		return nil, err
 	}
-	// On windows, we cannot duplicate a socket. We don't need to for mox localserve
-	// with FilesImmediate.
-	if !FilesImmediate {
+
+	if !FilesImmediate && runtime.GOOS != "windows" {
 		tcpln, ok := ln.(*net.TCPListener)
 		if !ok {
 			return nil, fmt.Errorf("listener not a tcp listener, but %T, for network %s, address %s", ln, network, addr)
@@ -142,7 +141,7 @@ func OpenPrivileged(path string) (*os.File, error) {
 
 // Shutdown is canceled when a graceful shutdown is initiated. SMTP, IMAP, periodic
 // processes should check this before starting a new operation. If this context is
-// canaceled, the operation should not be started, and new connections/commands should
+// canceled, the operation should not be started, and new connections/commands should
 // receive a message that the service is currently not available.
 var Shutdown context.Context
 var ShutdownCancel func()

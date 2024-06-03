@@ -462,6 +462,9 @@ func main() {
 		cmdSendmail(c)
 		return
 	}
+	var childMode bool
+
+	flag.BoolVar(&childMode, "child", false, "used internally to indicate this is a child process")
 
 	flag.StringVar(&mox.ConfigStaticPath, "config", envString("MOXCONF", filepath.FromSlash("config/mox.conf")), "configuration file, other config files are looked up in the same directory, defaults to $MOXCONF with a fallback to mox.conf")
 	flag.StringVar(&loglevel, "loglevel", "", "if non-empty, this log level is set early in startup")
